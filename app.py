@@ -15,4 +15,18 @@ def home_page():
 
 	return render_template('home_page.html', title=title, instructions=instructions)
 
+@app.route('/questions/<int:id>')
+def show_question(id):
+	"""Shows a form asking current question and listing choices"""
+	# sat_survey.questions[0].question
+	question = satisfaction_survey.questions[id].question
+	choices = satisfaction_survey.questions[id].choices
+
+	return render_template('question.html', question=question, choices=choices)
+
+	
+	
+	
+
+
 
