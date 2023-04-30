@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect
+from flask import Flask, request, render_template, redirect, flash
 from flask_debugtoolbar import DebugToolbarExtension
 from surveys import satisfaction_survey
 
@@ -19,10 +19,18 @@ def home_page():
 def show_question(id):
 	"""Shows a form asking current question and listing choices"""
 	
+	if len(responses) != id:
+		flash(f'Invalid question id: {id}')
+		return redirect(f'/questions/{len(responses)}')
+
+	if len(responses) == len(satisfaction_survey.questions):
+		return render_template('thank-you.html')
+
 	question = satisfaction_survey.questions[id].question
 	choices = satisfaction_survey.questions[id].choices
-
+	
 	return render_template('question.html', question=question, choices=choices, id=id)
+
 
 
 @app.route('/answer', methods=["POST"])
@@ -31,7 +39,10 @@ def show_answer():
 	answer = request.form['answer'] #stores value of selected radio button (i.e. Yes)
 	responses.append(answer)
 
-	return redirect(f'/questions/{len(responses)}')
+	if len(responses) == len(satisfaction_survey.questions):
+		return render_template('thank-you.html')
+	else:
+		return redirect(f'/questions/{len(responses)}')
 
 
 
